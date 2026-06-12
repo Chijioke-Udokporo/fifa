@@ -346,8 +346,25 @@
             initApp();
             
             // Wire up the floating refresh button
-            document.getElementById('refreshBtn').addEventListener('click', () => {
-                window.location.reload();
+            document.getElementById('refreshBtn').addEventListener('click', async (e) => {
+                const btn = e.currentTarget;
+                const icon = btn.querySelector('svg');
+                
+                // Visual feedback that sync is happening
+                btn.style.pointerEvents = 'none';
+                icon.style.animation = 'pulse 1s infinite';
+                
+                try {
+                    await Promise.all([
+                        fetchFreshData(),
+                        fetchStandings()
+                    ]);
+                } catch(err) {
+                    console.error('Manual sync failed:', err);
+                } finally {
+                    btn.style.pointerEvents = 'auto';
+                    icon.style.animation = 'none';
+                }
             });
 
             // Tab Switching Logic
