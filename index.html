@@ -212,27 +212,26 @@
                         ctx.moveTo(this.history[i].x, this.history[i].y);
                         ctx.lineTo(this.history[i+1].x, this.history[i+1].y);
                         
-                        // Soft fade
+                        // Softer fade
                         const opacity = Math.max(0, 1 - (i / this.history.length));
-                        // Visible but subtle neon accent (opacity 0.3 max)
-                        ctx.strokeStyle = `rgba(204, 255, 0, ${opacity * 0.3})`;
-                        ctx.lineWidth = 2.5; // Visible thickness
+                        ctx.strokeStyle = `rgba(204, 255, 0, ${opacity * 0.12})`; // Reduced tail opacity
+                        ctx.lineWidth = 1.5; // Thinner lines
                         ctx.stroke();
                     }
 
-                    // Draw head with glow
+                    // Draw head with softer glow
                     ctx.beginPath();
-                    ctx.arc(this.x, this.y, 2.5, 0, Math.PI * 2);
-                    ctx.fillStyle = 'rgba(204, 255, 0, 0.9)';
-                    ctx.shadowBlur = 12;
-                    ctx.shadowColor = 'rgba(204, 255, 0, 0.7)';
+                    ctx.arc(this.x, this.y, 1.8, 0, Math.PI * 2); // Smaller head
+                    ctx.fillStyle = 'rgba(204, 255, 0, 0.4)'; // Reduced head opacity
+                    ctx.shadowBlur = 8;
+                    ctx.shadowColor = 'rgba(204, 255, 0, 0.3)';
                     ctx.fill();
                     ctx.shadowBlur = 0; // Reset
                 }
             }
 
             const comets = [];
-            const cometCount = 5; // A few distinct lines, not noisy
+            const cometCount = 15; // Increased number of comets
             for (let i = 0; i < cometCount; i++) {
                 comets.push(new Comet());
             }
