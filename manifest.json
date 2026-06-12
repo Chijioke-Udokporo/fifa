@@ -1,0 +1,17 @@
+{
+  "name": "World Cup 26 Live",
+  "short_name": "WC26",
+  "description": "Live 2026 FIFA World Cup Schedule",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#050505",
+  "theme_color": "#ccff00",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

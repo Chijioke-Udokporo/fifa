@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FIFA World Cup 2026 Schedule</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#ccff00">
+    <link rel="icon" type="image/svg+xml" href="icon.svg">
+    <link rel="apple-touch-icon" href="icon.svg">
     <link href="https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&f[]=satoshi@400,500,700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -328,6 +332,19 @@
                 `;
 
                 container.appendChild(groupDiv);
+            });
+        }
+
+        // Register Service Worker for PWA Offline Support
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(registration => {
+                        console.log('ServiceWorker registration successful with scope: ', registration.scope);
+                    })
+                    .catch(err => {
+                        console.log('ServiceWorker registration failed: ', err);
+                    });
             });
         }
     </script>
