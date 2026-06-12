@@ -367,6 +367,18 @@
                 }
             });
 
+            // Auto-sync every 2 minutes
+            setInterval(async () => {
+                try {
+                    await Promise.all([
+                        fetchFreshData(),
+                        fetchStandings()
+                    ]);
+                } catch(err) {
+                    console.error('Auto-sync failed:', err);
+                }
+            }, 2 * 60 * 1000);
+
             // Tab Switching Logic
             document.querySelectorAll('.tab-btn, .fab-menu-item').forEach(btn => {
                 btn.addEventListener('click', (e) => switchTab(e.target.dataset.tab));
