@@ -46,10 +46,10 @@
         body { background-color: var(--bg-base); color: var(--text-primary); font-family: var(--font-body); min-height: 100vh; display: flex; justify-content: center; background-image: radial-gradient(circle at 15% 50%, rgba(var(--accent-rgb), 0.03) 0%, transparent 50%), radial-gradient(circle at 85% 30%, rgba(37, 99, 235, 0.04) 0%, transparent 50%); background-attachment: fixed; transition: background-color 0.3s ease, color 0.3s ease; }
         .container { width: 100%; max-width: 1200px; padding: 4rem 2rem; display: flex; flex-direction: column; gap: 3rem; position: relative; z-index: 1; }
         header { display: flex; flex-direction: column; gap: 1rem; animation: fadeDown 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-        .eyebrow { font-family: var(--font-display); text-transform: uppercase; letter-spacing: 0.1em; color: var(--accent-primary); font-size: 0.875rem; font-weight: 600; }
+        .eyebrow { font-family: var(--font-display); text-transform: uppercase; letter-spacing: 0.1em; color: var(--accent-primary); font-size: 0.65rem; font-weight: 600; }
         h1 { font-family: var(--font-display); font-size: clamp(3rem, 6vw, 5.5rem); font-weight: 700; line-height: 0.9; text-transform: uppercase; letter-spacing: -0.02em; }
         .subtitle { color: var(--text-secondary); font-size: 1.125rem; max-width: 500px; line-height: 1.5; }
-        .status-badge { display: inline-flex; align-items: center; gap: 8px; background: var(--border-dim); padding: 6px 12px; border-radius: 100px; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-secondary); width: fit-content; margin-top: 1rem; }
+        .status-badge { display: inline-flex; align-items: center; gap: 6px; background: var(--border-dim); padding: 4px 10px; border-radius: 100px; font-size: 0.6rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-secondary); width: fit-content; }
         .status-badge.live { color: var(--bg-base); background: var(--accent-primary); }
         .live-dot { width: 6px; height: 6px; background: currentColor; border-radius: 50%; animation: pulse 1.5s infinite; }
         .schedule { display: flex; flex-direction: column; gap: 4rem; }
@@ -288,17 +288,16 @@
             <div class="eyebrow">Powered by worldcup26.ir REST API</div>
             <h1>World Cup 26</h1>
             <p class="subtitle">Live data from the ongoing World Cup hosted by Canada, Mexico, and the United States.</p>
+            <div id="statusIndicator" class="status-badge">
+                <div class="live-dot"></div>
+                <span>Syncing Public API...</span>
+            </div>
             
             <div class="desktop-tabs">
                 <button class="tab-btn active" data-tab="games">Games</button>
                 <button class="tab-btn" data-tab="standings">Standings</button>
                 <button class="tab-btn" data-tab="scorers">Top Scorers</button>
                 <button class="tab-btn" data-tab="assists">Top Assists</button>
-            </div>
-            
-            <div id="statusIndicator" class="status-badge">
-                <div class="live-dot"></div>
-                <span>Syncing Public API...</span>
             </div>
         </header>
 
