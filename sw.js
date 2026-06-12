@@ -2,7 +2,8 @@ const CACHE_NAME = 'wc26-app-cache-v1';
 const ASSETS_TO_CACHE = [
   './index.html',
   './manifest.json',
-  './loho.jpg'
+  './icon.jpg',
+  './favicon.ico'
 ];
 
 self.addEventListener('install', (event) => {
