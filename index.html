@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FIFA World Cup 2026 Schedule</title>
+    <link href="https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&f[]=satoshi@400,500,700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-base: #050505;
+            --bg-surface: #0f0f11;
+            --bg-surface-hover: #1a1a1c;
+            --border-dim: #222224;
+            --border-bright: #333336;
+            --text-primary: #ffffff;
+            --text-secondary: #a1a1aa;
+            --text-tertiary: #71717a;
+            --accent-primary: #ccff00;
+            --font-display: 'Clash Display', sans-serif;
+            --font-body: 'Satoshi', sans-serif;
+            --radius-sm: 6px;
+            --radius-md: 12px;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+        body { background-color: var(--bg-base); color: var(--text-primary); font-family: var(--font-body); min-height: 100vh; display: flex; justify-content: center; background-image: radial-gradient(circle at 15% 50%, rgba(204, 255, 0, 0.03) 0%, transparent 50%), radial-gradient(circle at 85% 30%, rgba(37, 99, 235, 0.04) 0%, transparent 50%); background-attachment: fixed; }
+        .noise { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 9999; opacity: 0.04; background: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E"); }
+        .container { width: 100%; max-width: 1200px; padding: 4rem 2rem; display: flex; flex-direction: column; gap: 3rem; position: relative; z-index: 1; }
+        header { display: flex; flex-direction: column; gap: 1rem; animation: fadeDown 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        .eyebrow { font-family: var(--font-display); text-transform: uppercase; letter-spacing: 0.1em; color: var(--accent-primary); font-size: 0.875rem; font-weight: 600; }
+        h1 { font-family: var(--font-display); font-size: clamp(3rem, 6vw, 5.5rem); font-weight: 700; line-height: 0.9; text-transform: uppercase; letter-spacing: -0.02em; }
+        .subtitle { color: var(--text-secondary); font-size: 1.125rem; max-width: 500px; line-height: 1.5; }
+        .status-badge { display: inline-flex; align-items: center; gap: 8px; background: var(--border-dim); padding: 6px 12px; border-radius: 100px; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-secondary); width: fit-content; margin-top: 1rem; }
+        .status-badge.live { color: var(--bg-base); background: var(--accent-primary); }
+        .live-dot { width: 6px; height: 6px; background: currentColor; border-radius: 50%; animation: pulse 1.5s infinite; }
+        .schedule { display: flex; flex-direction: column; gap: 4rem; }
+        .date-group { display: flex; flex-direction: column; gap: 1.5rem; }
+        .date-header { display: flex; align-items: baseline; gap: 1rem; border-bottom: 1px solid var(--border-dim); padding-bottom: 1rem; position: sticky; top: 0; background: var(--bg-base); z-index: 10; }
+        .date-header h2 { font-family: var(--font-display); font-size: 2rem; font-weight: 600; color: var(--text-primary); }
+        .date-header span { color: var(--text-tertiary); font-size: 1rem; }
+        .match-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(100%, 1fr)); gap: 1rem; }
+        .match-card { background: var(--bg-surface); border: 1px solid var(--border-dim); border-radius: var(--radius-md); padding: 1.5rem; display: grid; grid-template-columns: 120px 1fr 140px; align-items: center; gap: 2rem; transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); position: relative; overflow: hidden; animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        .match-card::before { content: ''; position: absolute; left: 0; top: 0; height: 100%; width: 4px; background: var(--accent-primary); transform: scaleY(0); transform-origin: center; transition: transform 0.3s ease; }
+        .match-card:hover { border-color: var(--border-bright); background: var(--bg-surface-hover); transform: translateY(-2px); box-shadow: 0 12px 24px -10px rgba(0,0,0,0.5); }
+        .match-card:hover::before { transform: scaleY(1); }
+        
+        .match-card.bg-highlight {
+            background: linear-gradient(145deg, rgba(204, 255, 0, 0.08) 0%, var(--bg-surface) 100%);
+            border-color: rgba(204, 255, 0, 0.3);
+            box-shadow: 0 8px 32px -12px rgba(204, 255, 0, 0.2);
+        }
+        .match-card.bg-highlight::before {
+            transform: scaleY(1);
+        }
+        
+        .next-badge {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background: var(--accent-primary);
+            color: var(--bg-base);
+            font-size: 0.65rem;
+            font-weight: 700;
+            padding: 0.2rem 0.6rem;
+            border-bottom-left-radius: var(--radius-sm);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            font-family: var(--font-display);
+        }
+
+        .time-section { display: flex; flex-direction: column; gap: 0.25rem; }
+        .time { font-family: var(--font-display); font-size: 1.5rem; font-weight: 600; color: var(--text-primary); }
+        .score { font-family: var(--font-display); font-size: 1.8rem; font-weight: 700; color: var(--accent-primary); letter-spacing: 0.05em; }
+        .timezone { color: var(--text-secondary); font-size: 0.75rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; }
+        .teams-section { display: flex; align-items: center; justify-content: center; gap: 1.5rem; padding: 0 2rem; border-left: 1px solid var(--border-dim); border-right: 1px solid var(--border-dim); }
+        .team { display: flex; align-items: center; gap: 1rem; flex: 1; }
+        .team.home { justify-content: flex-end; text-align: right; }
+        .team.away { justify-content: flex-start; text-align: left; }
+        .team-name { font-size: 1.25rem; font-weight: 500; color: var(--text-primary); }
+        .flag { font-size: 1.5rem; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; background: #222; border-radius: 50%; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
+        .vs-badge { background: var(--bg-base); border: 1px solid var(--border-dim); color: var(--text-tertiary); font-family: var(--font-display); font-size: 0.75rem; font-weight: 600; padding: 0.25rem 0.5rem; border-radius: var(--radius-sm); }
+        .meta-section { display: flex; flex-direction: column; align-items: flex-end; gap: 0.5rem; text-align: right; }
+        .group-tag { background: var(--border-dim); color: var(--text-secondary); font-size: 0.75rem; font-weight: 600; padding: 0.25rem 0.5rem; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.05em; }
+        .venue { color: var(--text-tertiary); font-size: 0.875rem; display: flex; align-items: center; gap: 0.25rem; }
+        .venue svg { width: 14px; height: 14px; fill: currentColor; }
+        @keyframes fadeDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
+        .loader { display: flex; justify-content: center; padding: 3rem; color: var(--accent-primary); font-family: var(--font-display); letter-spacing: 0.1em; text-transform: uppercase; }
+        @media (max-width: 900px) {
+            .match-card { grid-template-columns: 1fr; gap: 1.5rem; padding: 1.5rem; }
+            .time-section { flex-direction: row; align-items: baseline; gap: 0.5rem; }
+            .teams-section { flex-direction: column; align-items: flex-start; padding: 0; border: none; gap: 1rem; }
+            .team { width: 100%; justify-content: flex-start; text-align: left; }
+            .team.home { flex-direction: row-reverse; justify-content: flex-end; }
+            .vs-badge { align-self: flex-start; margin-left: 2.5rem; }
+            .meta-section { align-items: flex-start; text-align: left; flex-direction: row; justify-content: space-between; border-top: 1px solid var(--border-dim); padding-top: 1rem; margin-top: 0.5rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="noise"></div>
+    <div class="container">
+        
+        <header>
+            <div class="eyebrow">Powered by worldcup26.ir REST API</div>
+            <h1>World Cup 26</h1>
+            <p class="subtitle">Live data pulled directly from the public worldcup26.ir endpoint, completely authentic.</p>
+            <div id="statusIndicator" class="status-badge">
+                <div class="live-dot"></div>
+                <span>Syncing Public API...</span>
+            </div>
+        </header>
+
+        <div id="scheduleContainer" class="schedule">
+            <div class="loader">Fetching from worldcup26.ir...</div>
+        </div>
+
+    </div>
+
+    <script>
+        const CACHE_KEY = 'fifa_wc2026_real_api_cache_v2';
+        
+        // This is the actual free public API we found for the 2026 World Cup
+        const API_URL = 'https://worldcup26.ir/get/games'; 
+
+        document.addEventListener('DOMContentLoaded', initApp);
+
+        async function initApp() {
+            // 1. Try to load from localStorage first for instant render
+            const cachedData = localStorage.getItem(CACHE_KEY);
+            if (cachedData) {
+                renderSchedule(JSON.parse(cachedData));
+                updateStatus('Cached Data Loaded', false);
+            }
+
+            // 2. Fetch fresh data from the real API
+            await fetchFreshData();
+        }
+
+        async function fetchFreshData() {
+            try {
+                updateStatus('Syncing Live Data...', true);
+                
+                const response = await fetch(API_URL);
+                if (!response.ok) throw new Error(`API fetch failed with status ${response.status}`);
+                const data = await response.json();
+
+                // Process the raw API JSON into our UI groupings
+                const transformedData = processApiData(data.games);
+
+                // 3. Save to LocalStorage
+                localStorage.setItem(CACHE_KEY, JSON.stringify(transformedData));
+                
+                // 4. Update UI
+                renderSchedule(transformedData);
+                
+                updateStatus('Live & Synced via API', true);
+
+            } catch (error) {
+                console.error("Failed to fetch fresh matches from worldcup26.ir:", error);
+                if (!localStorage.getItem(CACHE_KEY)) {
+                    document.getElementById('scheduleContainer').innerHTML = 
+                        '<div class="loader" style="color:var(--text-tertiary)">Unable to connect to the public API. Please check your internet connection or CORS settings.</div>';
+                }
+                updateStatus('Offline Mode (API Unavailable)', false);
+            }
+        }
+
+        // Helper function to get an emoji flag
+        function getFlagForTeam(teamName) {
+            const flags = {
+                'Mexico': '🇲🇽', 'South Africa': '🇿🇦', 'South Korea': '🇰🇷', 'Czech Republic': '🇨🇿', 
+                'Canada': '🇨🇦', 'USA': '🇺🇸', 'Qatar': '🇶🇦', 'Switzerland': '🇨🇭', 'Brazil': '🇧🇷',
+                'Morocco': '🇲🇦', 'Haiti': '🇭🇹', 'Scotland': '🏴󠁧󠁢󠁳󠁣󠁴󠁿', 'Australia': '🇦🇺', 'Turkey': '🇹🇷'
+            };
+            return flags[teamName] || '⚽';
+        }
+
+        function processApiData(gamesArray) {
+            // Filter to show all Group Stage games
+            const groupGames = gamesArray.filter(g => g.type === 'group');
+            
+            const grouped = {};
+            let nextGameFound = false;
+
+            // Map of stadium ID to its UTC offset during June/July 2026
+            const stadiumOffsets = {
+                "1": "-06:00", // Mexico City (No DST)
+                "2": "-06:00", // Guadalajara (No DST)
+                "3": "-06:00", // Monterrey (No DST)
+                "4": "-05:00", // Dallas (CDT)
+                "5": "-05:00", // Houston (CDT)
+                "6": "-05:00", // Kansas City (CDT)
+                "7": "-04:00", // Atlanta (EDT)
+                "8": "-04:00", // Miami (EDT)
+                "9": "-04:00", // Boston (EDT)
+                "10": "-04:00", // Philadelphia (EDT)
+                "11": "-04:00", // New York (EDT)
+                "12": "-04:00", // Toronto (EDT)
+                "13": "-07:00", // Vancouver (PDT)
+                "14": "-07:00", // Seattle (PDT)
+                "15": "-07:00", // San Francisco (PDT)
+                "16": "-07:00"  // Los Angeles (PDT)
+            };
+
+            groupGames.forEach(game => {
+                // local_date from API is "MM/DD/YYYY HH:MM" in stadium's local time
+                // We format it into ISO 8601 with the correct UTC offset: "YYYY-MM-DDTHH:MM:00-0X:00"
+                const [datePart, timePart] = game.local_date.split(' ');
+                const [month, day, year] = datePart.split('/');
+                const offset = stadiumOffsets[game.stadium_id] || "-04:00"; // fallback to EDT
+                
+                const isoString = `${year}-${month}-${day}T${timePart}:00${offset}`;
+                const dateObj = new Date(isoString);
+                
+                // Force output to West Africa Time (WAT) using Africa/Lagos timezone
+                const dateStr = dateObj.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: 'Africa/Lagos' });
+                const timeStr = dateObj.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', timeZone: 'Africa/Lagos' });
+
+                if (!grouped[dateStr]) {
+                    grouped[dateStr] = {
+                        dateGroup: dateStr,
+                        matchday: 'Matchday ' + game.matchday,
+                        matches: []
+                    };
+                }
+
+                let matchStatus = 'upcoming';
+                if (game.finished === 'TRUE') matchStatus = 'completed';
+                else if (game.time_elapsed !== 'notstarted') matchStatus = 'live';
+
+                let isNext = false;
+                if (matchStatus === 'upcoming' && !nextGameFound) {
+                    // Make sure the absolute date is actually in the future compared to now
+                    if (dateObj > new Date()) {
+                        isNext = true;
+                        nextGameFound = true;
+                    }
+                }
+
+                grouped[dateStr].matches.push({
+                    time: timeStr,
+                    status: matchStatus,
+                    isNext: isNext,
+                    homeTeam: game.home_team_name_en || game.home_team_label || 'TBD',
+                    homeFlag: getFlagForTeam(game.home_team_name_en),
+                    awayTeam: game.away_team_name_en || game.away_team_label || 'TBD',
+                    awayFlag: getFlagForTeam(game.away_team_name_en),
+                    group: 'Group ' + game.group,
+                    venue: 'Stadium ' + game.stadium_id,
+                    homeScore: game.home_score,
+                    awayScore: game.away_score
+                });
+            });
+
+            return Object.values(grouped);
+        }
+
+        function updateStatus(text, isLive) {
+            const statusEl = document.getElementById('statusIndicator');
+            const dot = isLive ? '<div class="live-dot"></div>' : '';
+            statusEl.innerHTML = `${dot}<span>${text}</span>`;
+            if (isLive) {
+                statusEl.classList.add('live');
+            } else {
+                statusEl.classList.remove('live');
+            }
+        }
+
+        function renderSchedule(scheduleData) {
+            const container = document.getElementById('scheduleContainer');
+            container.innerHTML = ''; 
+
+            scheduleData.forEach(dayGroup => {
+                const groupDiv = document.createElement('div');
+                groupDiv.className = 'date-group';
+                
+                let matchesHTML = '';
+                dayGroup.matches.forEach(match => {
+                    let timeOrScoreHTML = '';
+                    if (match.status === 'completed' || match.status === 'live') {
+                        timeOrScoreHTML = `<span class="score">${match.homeScore} - ${match.awayScore}</span>
+                                           <span class="timezone">${match.status === 'live' ? '<span style="color:#e11d48">LIVE</span>' : 'FT'}</span>`;
+                    } else {
+                        timeOrScoreHTML = `<span class="time">${match.time}</span>
+                                           <span class="timezone">WAT</span>`;
+                    }
+
+                    const highlightClass = match.isNext ? ' bg-highlight' : '';
+                    const nextBadgeHTML = match.isNext ? '<div class="next-badge">Up Next</div>' : '';
+
+                    matchesHTML += `
+                        <div class="match-card${highlightClass}">
+                            ${nextBadgeHTML}
+                            <div class="time-section">
+                                ${timeOrScoreHTML}
+                            </div>
+                            <div class="teams-section">
+                                <div class="team home">
+                                    <span class="team-name">${match.homeTeam}</span>
+                                    <span class="flag">${match.homeFlag}</span>
+                                </div>
+                                <span class="vs-badge">VS</span>
+                                <div class="team away">
+                                    <span class="flag">${match.awayFlag}</span>
+                                    <span class="team-name">${match.awayTeam}</span>
+                                </div>
+                            </div>
+                            <div class="meta-section">
+                                <span class="group-tag">${match.group}</span>
+                                <span class="venue">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+                                    ${match.venue}
+                                </span>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                groupDiv.innerHTML = `
+                    <div class="date-header">
+                        <h2>${dayGroup.dateGroup}</h2>
+                        <span>${dayGroup.matchday}</span>
+                    </div>
+                    <div class="match-list">
+                        ${matchesHTML}
+                    </div>
+                `;
+
+                container.appendChild(groupDiv);
+            });
+        }
+    </script>
+</body>
+</html>
