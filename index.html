@@ -151,8 +151,6 @@
             const canvas = document.getElementById('particleCanvas');
             const ctx = canvas.getContext('2d');
             let width, height;
-            let particles = [];
-            const connectionDistance = 150;
 
             function resize() {
                 width = window.innerWidth;
@@ -164,57 +162,87 @@
             window.addEventListener('resize', resize);
             resize();
 
-            class Particle {
-                constructor() {
-                    this.x = Math.random() * width;
-                    this.y = Math.random() * height;
-                    this.vx = (Math.random() - 0.5) * 0.4; // Very slow drift
-                    this.vy = (Math.random() - 0.5) * 0.4;
-                    this.radius = Math.random() * 1.2 + 0.5; // Tiny dots
+            class LightCycle {
+                constructor(x, y, isVertical) {
+                    this.x = x;
+                    this.y = y;
+                    this.speed = 1.5; // Smooth, digital crawling speed
+                    
+                    this.vx = isVertical ? 0 : (Math.random() > 0.5 ? this.speed : -this.speed);
+                    this.vy = isVertical ? (Math.random() > 0.5 ? this.speed : -this.speed) : 0;
+                    
+                    this.history = [];
+                    this.maxHistory = 180; // Long fading trail
+                    this.turnTimer = 0;
                 }
+
                 update() {
+                    // Save history for the trail
+                    this.history.unshift({ x: this.x, y: this.y });
+                    if (this.history.length > this.maxHistory) {
+                        this.history.pop();
+                    }
+
+                    // Move
                     this.x += this.vx;
                     this.y += this.vy;
-                    if (this.x < 0 || this.x > width) this.vx *= -1;
-                    if (this.y < 0 || this.y > height) this.vy *= -1;
+
+                    // Tron-like 90 degree random turns
+                    this.turnTimer++;
+                    if (this.turnTimer > Math.random() * 300 + 100) {
+                        this.turnTimer = 0;
+                        if (this.vx !== 0) { 
+                            this.vx = 0;
+                            this.vy = (Math.random() > 0.5 ? this.speed : -this.speed);
+                        } else { 
+                            this.vy = 0;
+                            this.vx = (Math.random() > 0.5 ? this.speed : -this.speed);
+                        }
+                    }
+
+                    // Bounce off walls by turning 90 degrees
+                    if (this.x < 0) { this.x = 0; this.vx = 0; this.vy = this.speed * (Math.random() > 0.5 ? 1 : -1); }
+                    if (this.x > width) { this.x = width; this.vx = 0; this.vy = this.speed * (Math.random() > 0.5 ? 1 : -1); }
+                    if (this.y < 0) { this.y = 0; this.vy = 0; this.vx = this.speed * (Math.random() > 0.5 ? 1 : -1); }
+                    if (this.y > height) { this.y = height; this.vy = 0; this.vx = this.speed * (Math.random() > 0.5 ? 1 : -1); }
                 }
+
                 draw() {
+                    if (this.history.length < 2) return;
+                    
+                    // Draw fading trail
+                    for (let i = 0; i < this.history.length - 1; i++) {
+                        ctx.beginPath();
+                        ctx.moveTo(this.history[i].x, this.history[i].y);
+                        ctx.lineTo(this.history[i+1].x, this.history[i+1].y);
+                        
+                        // Opacity fades linearly across the tail length
+                        const opacity = 1 - (i / this.history.length);
+                        ctx.strokeStyle = `rgba(204, 255, 0, ${opacity * 0.25})`; // Faint thin lines
+                        ctx.lineWidth = 1;
+                        ctx.stroke();
+                    }
+
+                    // Draw the leading dot (head)
                     ctx.beginPath();
-                    ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-                    ctx.fillStyle = 'rgba(204, 255, 0, 0.2)'; // Faint lime dots
+                    ctx.arc(this.x, this.y, 2.5, 0, Math.PI * 2);
+                    ctx.fillStyle = 'rgba(204, 255, 0, 0.6)';
                     ctx.fill();
                 }
             }
 
-            // Generate fewer particles so it doesn't look cluttered
-            const particleCount = Math.min(Math.floor(window.innerWidth / 25), 50);
-            for (let i = 0; i < particleCount; i++) {
-                particles.push(new Particle());
-            }
+            // Exactly 3 lines per user request
+            const cycles = [
+                new LightCycle(width * 0.2, height * 0.3, false),
+                new LightCycle(width * 0.8, height * 0.7, true),
+                new LightCycle(width * 0.5, height * 0.5, false)
+            ];
 
             function animate() {
                 ctx.clearRect(0, 0, width, height);
-                
-                for (let i = 0; i < particles.length; i++) {
-                    particles[i].update();
-                    particles[i].draw();
-                    
-                    for (let j = i + 1; j < particles.length; j++) {
-                        const dx = particles[i].x - particles[j].x;
-                        const dy = particles[i].y - particles[j].y;
-                        const distance = Math.sqrt(dx * dx + dy * dy);
-                        
-                        if (distance < connectionDistance) {
-                            ctx.beginPath();
-                            ctx.moveTo(particles[i].x, particles[i].y);
-                            ctx.lineTo(particles[j].x, particles[j].y);
-                            // Opacity fades out as distance increases
-                            const opacity = 1 - (distance / connectionDistance);
-                            ctx.strokeStyle = \`rgba(204, 255, 0, \${opacity * 0.12})\`; // Faint lines
-                            ctx.lineWidth = 0.5;
-                            ctx.stroke();
-                        }
-                    }
+                for (const cycle of cycles) {
+                    cycle.update();
+                    cycle.draw();
                 }
                 requestAnimationFrame(animate);
             }
