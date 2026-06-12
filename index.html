@@ -254,8 +254,7 @@
     <script>
         (function() {
             const savedTheme = localStorage.getItem('theme');
-            const prefersLight = window.matchMedia('(prefers-color-scheme: light)').matches;
-            if (savedTheme === 'light' || (!savedTheme && prefersLight)) {
+            if (savedTheme === 'light') {
                 document.documentElement.setAttribute('data-theme', 'light');
             }
         })();
