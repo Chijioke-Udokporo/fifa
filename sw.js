@@ -1,4 +1,4 @@
-const CACHE_NAME = 'wc26-app-cache-v7';
+const CACHE_NAME = 'wc26-app-cache-v8';
 const ASSETS_TO_CACHE = [
   './index.html',
   './manifest.json',
