@@ -5,12 +5,12 @@
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#050505",
-  "theme_color": "#ccff00",
+  "theme_color": "#050505",
   "icons": [
     {
-      "src": "icon.svg",
+      "src": "https://upload.wikimedia.org/wikipedia/en/thumb/e/e3/2026_FIFA_World_Cup_logo.svg/512px-2026_FIFA_World_Cup_logo.svg.png",
       "sizes": "512x512",
-      "type": "image/svg+xml",
+      "type": "image/png",
       "purpose": "any maskable"
     }
   ]
