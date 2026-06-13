@@ -399,6 +399,21 @@
             
             // Render static player stats
             renderPlayerStats();
+
+            // Handle initial URL tab state
+            const params = new URLSearchParams(window.location.search);
+            const initialTab = params.get('tab') || 'games';
+            switchTab(initialTab, false);
+
+            // Handle browser back/forward buttons
+            window.addEventListener('popstate', (e) => {
+                if (e.state && e.state.tab) {
+                    switchTab(e.state.tab, false);
+                } else {
+                    const urlParams = new URLSearchParams(window.location.search);
+                    switchTab(urlParams.get('tab') || 'games', false);
+                }
+            });
         });
 
         const MOCK_STATS = {
@@ -450,7 +465,7 @@
             document.getElementById('assists-tbody').innerHTML = assistsHtml;
         }
 
-        function switchTab(tabId) {
+        function switchTab(tabId, pushState = true) {
             document.querySelectorAll('.tab-btn, .fab-menu-item').forEach(btn => {
                 if (btn.dataset.tab === tabId) btn.classList.add('active');
                 else btn.classList.remove('active');
@@ -468,6 +483,12 @@
             });
 
             document.getElementById('fabMenu').classList.add('hidden');
+
+            if (pushState) {
+                const url = new URL(window.location);
+                url.searchParams.set('tab', tabId);
+                window.history.pushState({ tab: tabId }, '', url);
+            }
         }
 
         function initParticles() {
