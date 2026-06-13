@@ -104,11 +104,16 @@
         .venue svg { width: 14px; height: 14px; fill: currentColor; }
         .status-upcoming { background: rgba(255, 255, 255, 0.1); color: var(--text-secondary); }
         
-        /* Tabs */
+        /* Tabs & Filters */
         .desktop-tabs { display: flex; gap: 1rem; margin-top: 1.5rem; }
         .tab-btn { background: var(--bg-surface); border: 1px solid var(--border-dim); color: var(--text-secondary); padding: 0.75rem 1.5rem; border-radius: 8px; font-family: var(--font-body); font-size: 1rem; font-weight: 500; cursor: pointer; transition: all 0.3s ease; }
         .tab-btn:hover { background: var(--bg-surface-hover); border-color: var(--border-bright); color: var(--text-primary); }
         .tab-btn.active { background: rgba(var(--accent-rgb), 0.1); border-color: var(--accent-primary); color: var(--accent-primary); box-shadow: 0 0 15px rgba(var(--accent-rgb), 0.15); }
+        
+        .filter-controls { display: flex; gap: 0.25rem; margin-bottom: 2rem; background: var(--bg-surface); padding: 0.25rem; border-radius: 100px; width: fit-content; border: 1px solid var(--border-dim); }
+        .filter-btn { background: transparent; border: none; color: var(--text-secondary); padding: 0.5rem 1rem; border-radius: 100px; font-family: var(--font-body); font-size: 0.875rem; font-weight: 500; cursor: pointer; transition: all 0.2s ease; }
+        .filter-btn:hover { color: var(--text-primary); }
+        .filter-btn.active { background: var(--bg-surface-hover); color: var(--text-primary); box-shadow: 0 2px 8px rgba(0,0,0,0.2); border: 1px solid var(--border-dim); }
         .tab-content { animation: fadeDown 0.5s ease forwards; }
 
         /* Standings */
@@ -301,6 +306,11 @@
         </header>
 
         <div id="games-tab" class="tab-content active">
+            <div class="filter-controls">
+                <button class="filter-btn active" data-filter="all">All Matches</button>
+                <button class="filter-btn" data-filter="upcoming">Upcoming</button>
+                <button class="filter-btn" data-filter="completed">Completed</button>
+            </div>
             <div id="scheduleContainer" class="schedule">
                 <div class="loader">Fetching from worldcup26.ir...</div>
             </div>
@@ -413,6 +423,16 @@
                     const urlParams = new URLSearchParams(window.location.search);
                     switchTab(urlParams.get('tab') || 'games', false);
                 }
+            });
+
+            // Match Filter Logic
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                    e.target.classList.add('active');
+                    currentMatchFilter = e.target.dataset.filter;
+                    applyMatchFilter();
+                });
             });
         });
 
@@ -603,7 +623,8 @@
             // 1. Try to load from localStorage first for instant render
             const cachedData = localStorage.getItem(CACHE_KEY);
             if (cachedData) {
-                renderSchedule(JSON.parse(cachedData));
+                window.fullScheduleData = JSON.parse(cachedData);
+                applyMatchFilter();
                 updateStatus('Cached Data Loaded', false);
             }
             
@@ -730,7 +751,8 @@
                 localStorage.setItem(CACHE_KEY, JSON.stringify(transformedData));
                 
                 // 4. Update UI
-                renderSchedule(transformedData);
+                window.fullScheduleData = transformedData;
+                applyMatchFilter();
                 
                 updateStatus('Live & Synced via API', true);
 
@@ -843,6 +865,26 @@
             } else {
                 statusEl.classList.remove('live');
             }
+        }
+
+        let currentMatchFilter = 'all';
+
+        function applyMatchFilter() {
+            if (!window.fullScheduleData) return;
+            let dataToRender = window.fullScheduleData;
+
+            if (currentMatchFilter !== 'all') {
+                dataToRender = window.fullScheduleData.map(group => {
+                    const filteredMatches = group.matches.filter(m => {
+                        if (currentMatchFilter === 'upcoming') return m.status === 'upcoming' || m.status === 'live';
+                        if (currentMatchFilter === 'completed') return m.status === 'completed';
+                        return true;
+                    });
+                    return { ...group, matches: filteredMatches };
+                }).filter(group => group.matches.length > 0);
+            }
+
+            renderSchedule(dataToRender);
         }
 
         function renderSchedule(scheduleData) {
